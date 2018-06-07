@@ -1,0 +1,4 @@
+.trans {
+  transform: rotate(30deg);
+  box-sizing: border-box;
+}
