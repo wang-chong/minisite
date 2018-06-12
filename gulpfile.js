@@ -22,6 +22,8 @@ var gzip = require('gulp-gzip');
 var tar = require('gulp-tar');
 // 给css自动添加前缀
 var autoprefixer = require('gulp-autoprefixer');
+// 开发时增加代理转发
+var proxy = require('http-proxy-middleware');
 
 // MD5
 gulp.task('md5', function () {
@@ -101,12 +103,26 @@ gulp.task('clean-dist', function (cb) {
 });
 
 gulp.task('server', function () {
+    var middleware = [];
+    var proxyOptions = {
+        '/api': {
+            target: 'http://localhost:3000/api',
+            changeOrigin: true,
+            pathRewrite: {
+                '^/api': ''
+            }
+        }
+    };
+    for (var prop in proxyOptions) {
+        middleware.push(proxy([prop], proxyOptions[prop]));
+    }
     // 静态服务器
     browserSync.init({
         port: 8081,
         files: '**',
         server: {
-            baseDir: "./"
+            baseDir: "./",
+            middleware: middleware
         }
     });
 });
