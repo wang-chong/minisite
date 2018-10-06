@@ -38,25 +38,25 @@ gulp.task('md5', function () {
 });
 
 gulp.task('prefix', function () {
-	var prefixRule = {
+    var prefixRule = {
         browsers: ['IE >= 8.0'],
         cascade: true, //是否美化属性值 默认：true
         remove:true //是否去掉不必要的前缀 默认：true
     };
-	return gulp.src('dist/**/*.css')
-		.pipe(autoprefixer(prefixRule))
-		.pipe(gulp.dest('abc'))
+    return gulp.src('dist/**/*.css')
+        .pipe(autoprefixer(prefixRule))
+        .pipe(gulp.dest('abc'))
 });
 
 // 对css或者js进行打包，最后将只有一个js被html访问
 gulp.task('refHtml', function () {
-	var resourceFilters = ['*site/**/*.html'];
-	var refRule = {
-		allowEmpty: true,
-		searchPath: process.cwd(),
-		base: 'html'
-	};
-	var prefixRule = {
+    var resourceFilters = ['*site/**/*.html'];
+    var refRule = {
+        allowEmpty: true,
+        searchPath: process.cwd(),
+        base: 'html'
+    };
+    var prefixRule = {
         browsers: ['IE >= 8.0', 'Firefox >= 20', 'Chrome >= 40'],
         cascade: true, //是否美化属性值 默认：true
         remove:true //是否去掉不必要的前缀 默认：true
@@ -72,12 +72,23 @@ gulp.task('refHtml', function () {
         .pipe(gulp.dest('build'));
 });
 
+// 静态资源的复制
+gulp.task('copy', function () {
+    var resourceFilters = ['*static/**/*.*',
+                           '*fonts/*.*',
+                           '*imgs/**/*.*',
+                           '*site/**/*.*'
+                           ];
+    return gulp.src(resourceFilters)
+        .pipe(gulp.dest('dist'));
+});
+
 // 压缩打包dist文件夹
 gulp.task('gzip', function () {
-  	return gulp.src(['dist/**/*'])
-	    .pipe(tar('minisite.tar'))
-	    .pipe(gzip())
-	    .pipe(gulp.dest('dist'));
+    return gulp.src(['dist/**/*'])
+        .pipe(tar('site.tar'))
+        .pipe(gzip())
+        .pipe(gulp.dest('dist'));
 });
 
 // delete build folder
@@ -95,7 +106,7 @@ gulp.task('clean-dist', function (cb) {
     return gulp.src(['dist'], {
             read: false
         })
-    	.pipe(clean({
+        .pipe(clean({
             force: true
         }));
 });
@@ -113,9 +124,9 @@ gulp.task('server', function () {
 
 // 项目编译打包
 gulp.task('build',
-	['clean-dist'],
-	sequence(
-		'refHtml',
-		'md5',
-		['clean-build', 'gzip']
+    ['clean-dist'],
+    sequence(
+        ['refHtml', 'copy'],
+        'md5',
+        ['clean-build', 'gzip']
 ));
