@@ -90,7 +90,7 @@ gulp.task('gzip', function () {
     return gulp.src(['dist/**/*'])
         .pipe(tar('site.tar'))
         .pipe(gzip())
-        .pipe(gulp.dest('dist'));
+        .pipe(gulp.dest('tar'));
 });
 
 // delete build folder
@@ -106,6 +106,16 @@ gulp.task('clean-build', function (cb) {
 // delete dist folder
 gulp.task('clean-dist', function (cb) {
     return gulp.src(['dist'], {
+            read: false
+        })
+        .pipe(clean({
+            force: true
+        }));
+});
+
+// delete tar folder
+gulp.task('clean-tar', function (cb) {
+    return gulp.src(['tar'], {
             read: false
         })
         .pipe(clean({
@@ -140,7 +150,7 @@ gulp.task('server', function () {
 
 // 项目编译打包
 gulp.task('build',
-    ['clean-dist'],
+    ['clean-dist', 'clean-tar'],
     sequence(
         ['refHtml', 'copy'],
         'md5',
