@@ -47,7 +47,7 @@ gulp.task('prefix', function () {
     var prefixRule = {
         browsers: ['IE >= 8.0'],
         cascade: true, //是否美化属性值 默认：true
-        remove:true //是否去掉不必要的前缀 默认：true
+        remove: true //是否去掉不必要的前缀 默认：true
     };
     return gulp.src('dist/**/*.css')
         .pipe(autoprefixer(prefixRule))
