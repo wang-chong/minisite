@@ -11,8 +11,12 @@ var useref = require('gulp-useref');
 var cleanCss = require('gulp-clean-css');
 // 针对不同文件进行不一样的操作
 var gulpIf = require('gulp-if');
+// 压缩js时支持es6
+var uglifyes = require('uglify-es');
 // 针对js进行压缩
-var uglify = require('gulp-uglify');
+// var uglify = require('gulp-uglify');
+var composer = require('gulp-uglify/composer');
+var minify = composer(uglifyes, console);
 // gulp任务同步执行
 var sequence = require('gulp-sequence');
 // 删除文件夹
@@ -70,7 +74,7 @@ gulp.task('refHtml', function () {
         .pipe(gulpIf('*.css', cleanCss({
             compatiblility: 'ie8'
         })))
-        .pipe(gulpIf('*.js', uglify()))
+        .pipe(gulpIf('*.js', minify()))
         .pipe(gulp.dest('build'));
 });
 
@@ -150,9 +154,10 @@ gulp.task('server', function () {
 
 // 项目编译打包
 gulp.task('build',
-    ['clean-dist', 'clean-tar'],
     sequence(
-        ['refHtml', 'copy'],
+        ['clean-dist', 'clean-tar'],
+        'refHtml',
+        'copy',
         'md5',
         ['clean-build', 'gzip']
 ));
